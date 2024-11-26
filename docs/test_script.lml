@@ -1,7 +1,7 @@
 println "hello world";
 let el = (wcaml.create_element) "h1";
 let text_el = (wcaml.create_text_node) "hello world!";
-(wcaml.set_attr) el "style" "color:yellow";
+(wcaml.set_attr) el "style" "color:darkgreen";
 (wcaml.append_child) el text_el;
 (wcaml.body_append_child) el;
 let p = (wcaml.create_element) "p";
@@ -37,15 +37,23 @@ let click_callback2 = |ev| {
     println "pressed the SECOND BUTTON!! " ev;
 };
 
-(wcaml.set_attr) el "id" "btn2";
+let wait_msg = (wcaml.create_element) "p";
+(wcaml.append_child) wait_msg ((wcaml.create_text_node) "after 7s, button 2 will appear");
+(wcaml.body_append_child) wait_msg;
 
-let reset_color = |_| {
-    println "resetting the color to black now (interval triggered)";
-    let h = (wcaml.query_selector) "h1";
-    (wcaml.set_attr) h "style" "color:black";
+let tofunc = |_| {
+    (wcaml.remove) wait_msg;
+    (wcaml.set_attr) el "id" "btn2";
+
+    let reset_color = |_| {
+        println "resetting the color to black now (interval triggered)";
+        let h = (wcaml.query_selector) "h1";
+        (wcaml.set_attr) h "style" "color:black";
+    };
+
+    (wcaml.body_append_child) el;
+    (wcaml.bind) ((wcaml.query_selector) "#btn2") "click" click_callback2;
+
+    (wcaml.set_interval) reset_color 3000;
 };
-
-(wcaml.body_append_child) el;
-(wcaml.bind) ((wcaml.query_selector) "#btn2") "click" click_callback2;
-
-(wcaml.set_interval) reset_color 3000;
+(wcaml.set_timeout) tofunc 7000;
