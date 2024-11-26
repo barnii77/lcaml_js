@@ -1,0 +1,51 @@
+println "hello world";
+let el = (wcaml.create_element) "h1";
+let text_el = (wcaml.create_text_node) "hello world!";
+(wcaml.set_attr) el "style" "color:yellow";
+(wcaml.append_child) el text_el;
+(wcaml.body_append_child) el;
+let p = (wcaml.create_element) "p";
+(wcaml.append_child) p ((wcaml.create_text_node) "this is my website with lcaml");
+(wcaml.set_attr) p "id" "mytext";
+(wcaml.body_append_child) p;
+(wcaml.remove) p;
+let callback = |req| {
+    println (py_getattr_exec req "text");
+};
+(wcaml.request) "GET" "/wcaml_utils.lml" callback;
+
+let el = (wcaml.create_element) "button";
+let text_el = (wcaml.create_text_node) "button";
+(wcaml.append_child) el text_el;
+
+let click_callback = |ev| {
+    let h = (wcaml.query_selector) "h1";
+    (wcaml.set_attr) h "style" "color:blue";
+    println "pressed the button!! " ev;
+};
+
+(wcaml.bind) el "click" click_callback;
+(wcaml.body_append_child) el;
+
+let el = (wcaml.create_element) "button";
+let text_el = (wcaml.create_text_node) "button nr 2";
+(wcaml.append_child) el text_el;
+
+let click_callback2 = |ev| {
+    let h = (wcaml.query_selector) "h1";
+    (wcaml.set_attr) h "style" "color:red";
+    println "pressed the SECOND BUTTON!! " ev;
+};
+
+(wcaml.set_attr) el "id" "btn2";
+
+let reset_color = |_| {
+    println "resetting the color to black now (interval triggered)";
+    let h = (wcaml.query_selector) "h1";
+    (wcaml.set_attr) h "style" "color:black";
+};
+
+(wcaml.body_append_child) el;
+(wcaml.bind) ((wcaml.query_selector) "#btn2") "click" click_callback2;
+
+(wcaml.set_interval) reset_color 3000;
