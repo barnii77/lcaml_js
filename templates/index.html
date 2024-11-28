@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generic testing page</title>
+    <script src="/lcaml.js"></script>
+    <script>
+        function loadLcaml() {
+            let f = document.getElementById("file-upload").files[0];
+            let reader = new FileReader();
+            reader.readAsText(f, "UTF-8");
+            reader.onload = function (evt) {
+                let content = evt.target.result;
+                if (typeof content !== "string")
+                    return;
+                let scr = document.createElement("script");
+                scr.type = "text/lcaml";
+                scr.textContent = content;
+                let loader_div = document.getElementById("loader-div");
+                loader_div.style.display = "none";
+                document.body.appendChild(scr);
+                runLcaml(scr);
+            }
+        }
+    </script>
+</head>
+<body onload="initLcaml()">
+<div id="loader-div">
+    <label>
+        <input type="file" id="file-upload">
+        <button onclick="loadLcaml()">load</button>
+    </label>
+</div>
+</body>
+</html>

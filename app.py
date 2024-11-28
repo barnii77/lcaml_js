@@ -28,14 +28,24 @@ def lcaml_js_file():
     return send_file("lcaml.js")
 
 
-@app.route("/wcaml_utils.lml")
+@app.route("/readme.md")
 def wcaml_utils_lml_file():
-    return send_file("wcaml_utils.lml")
+    return send_file("README.md")
+
+
+@app.route("/test")
+def test():
+    return render_template("test.html")
 
 
 @app.route("/")
-def test():
-    return render_template("test.html")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/E1/index.lml")
+def e1_index_lml():
+    return 'println "hello world";'
 
 
 if __name__ == "__main__":

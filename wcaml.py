@@ -101,8 +101,8 @@ def wcaml_del_attr(el, attr: str):
     del el.attrs[attr]
 
 
-@pyffi.interface(name="wcaml_attr_exists")
-def wcaml_attr_exists(el, attr: str):
+@pyffi.interface(name="wcaml_has_attr")
+def wcaml_has_attr(el, attr: str):
     if not isinstance(attr, str):
         raise TypeError(f"invalid type {type(attr)} for argument attr: expected string")
     return nested_exists(el, attr)
@@ -298,10 +298,23 @@ def wcaml_clear_interval(timer_id):
     timer.clear_interval(timer_id)
 
 
+@pyffi.interface(name="wcaml_parse_from_string")
+def wcaml_parse_from_string(content, doctype):
+    return window.lcamlContext.parseFromString(content, doctype)
+
+
+@pyffi.interface(name="wcaml_run_lcaml_script")
+def wcaml_run_lcaml_script(script_el):
+    window.runLcaml(script_el)
+
+
 @pyffi.pymodule
 def module(context):
     return {
         "wcaml": {
+            "js_window": window,
+            "js_document": document,
+            "run_lcaml_script": wcaml_run_lcaml_script,
             "set": wcaml_set,
             "get": wcaml_get,
             "win_set": wcaml_win_set,
@@ -331,11 +344,12 @@ def module(context):
             "get_attr": wcaml_get_attr,
             "get_attrs": wcaml_get_attrs,
             "del_attr": wcaml_del_attr,
-            "attr_exists": wcaml_attr_exists,
+            "has_attr": wcaml_has_attr,
             "remove": wcaml_remove,
             "set_timeout": wcaml_set_timeout,
             "clear_timeout": wcaml_clear_timeout,
             "set_interval": wcaml_set_interval,
             "clear_interval": wcaml_clear_interval,
+            "parse_from_string": wcaml_parse_from_string,
         }
     }

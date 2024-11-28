@@ -9,10 +9,10 @@ let p = (wcaml.create_element) "p";
 (wcaml.set_attr) p "id" "mytext";
 (wcaml.body_append_child) p;
 (wcaml.remove) p;
-let callback = |req| {
-    println (py_getattr_exec req "text");
+let callback = |resp| {
+    println (py_getattr_exec resp "text");
 };
-(wcaml.request) "GET" "/wcaml_utils.lml" callback;
+(wcaml.request) "GET" "/readme.md" callback;
 
 let el = (wcaml.create_element) "button";
 let text_el = (wcaml.create_text_node) "button";

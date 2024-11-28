@@ -19,11 +19,16 @@ function populateScriptContentThenCall(callback, script, ...otherArgs) {
     xhr.send();
 }
 
+function getDefaultLcamlContext() {
+    let parser = new DOMParser();
+    return {"parseFromString": (content, doctype) => parser.parseFromString(content, doctype)};
+}
+
 /**
  * Initialize LCaml functionality: brython and type="text/lcaml" scripts
  */
 function initLcaml() {
-    if (window.lcamlData !== undefined)
+    if (window.lcamlContext !== undefined || window.runLcaml !== undefined)
         return;
     let script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/brython@3.11.1/brython.min.js";
@@ -46,10 +51,10 @@ function initLcaml() {
                     scriptName = "<inline-script>";
                 console.log(`running script ${scriptName}`);
                 try {
-                    window.lcamlData.lcamlContext = lcamlMain(
+                    window.lcamlContext = lcamlMain(
                         script.src ? script.src : "<unknown>",
                         script.textContent,
-                        window.lcamlData.lcamlContext,
+                        window.lcamlContext,
                     );
                 } catch (error) {
                     console.error("error executing lcaml script:", error);
@@ -58,10 +63,9 @@ function initLcaml() {
             let scriptExecutor = (lcamlMain) => {
                 console.log("successfully loaded lcaml.js functionality");
                 let scripts = document.querySelectorAll('script[type="text/lcaml"]');
-                window.lcamlData = {}
-                window.lcamlData.lcamlContext = {}
-                window.lcamlData.runLcaml = (script) => runScript(script, lcamlMain)
-                scripts.forEach(window.lcamlData.runLcaml);
+                window.lcamlContext = getDefaultLcamlContext();
+                window.runLcaml = (script) => runScript(script, lcamlMain);
+                scripts.forEach(window.runLcaml);
             };
             window.brythonLoadLcamlMainCallback = (lcamlMain) => {
                 if (document.readyState !== "loading")

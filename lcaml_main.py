@@ -4,6 +4,7 @@ from lcaml_py_repo.lcaml_py.core import interpreter as interpreter_mod
 from lcaml_py_repo.lcaml_py.core import interpreter_vm as interpreter_vm_mod
 from lcaml_py_repo.lcaml_py.core import lcaml_expression
 from lcaml_py_repo.lcaml_py.core import pyffi
+from lcaml_py_repo.lcaml_py.core.lcaml_lexer import Syntax
 from lcaml_py_repo.lcaml_py.core.lcaml_utils import get_marked_code_snippet
 
 
@@ -76,13 +77,24 @@ def main(file, code, context_js_obj):
     try:
         interpreter = interpreter_mod.Interpreter(code, file=file)
         context = interpreter_mod.get_builtins()
-        context.update(wcaml.module(context).fields)
-        context.update(interpreter_mod.lcamlify_vars(context_js_obj.to_dict()).fields)
+        context.update(wcaml.module(context).value.fields)
+        for k in context_js_obj:
+            context[k] = context_js_obj[k]
         result = interpreter.execute(context)
-        return pyffi._lcaml_to_python(result)
+
+        # context cleanup
+        out_context = context.copy()
+        out_context["->"] = pyffi._lcaml_to_python(result)
+        if Syntax._interpreter_intrinsic in out_context:
+            out_context.pop(Syntax._interpreter_intrinsic)
+        if Syntax._vm_intrinsic in out_context:
+            out_context.pop(Syntax._vm_intrinsic)
+        if Syntax._this_intrinsic in out_context:
+            out_context.pop(Syntax._this_intrinsic)
     except Exception as e:
         print(get_lcaml_traceback(e))
         raise e
+    return out_context
 
 
 if __name__ == "__main__":
