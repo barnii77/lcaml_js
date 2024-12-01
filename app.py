@@ -48,5 +48,10 @@ def e1_index_lml():
     return 'println "hello world";'
 
 
+@app.route("/E2/index.html")
+def e1_index_lml():
+    return '<!DOCTYPE html><html lang="en"><head><title>Testing page</title></head><body><p>Hello world!</p></body></html>'
+
+
 if __name__ == "__main__":
     app.run()

@@ -26,8 +26,9 @@ function getDefaultLcamlContext() {
 
 /**
  * Initialize LCaml functionality: brython and type="text/lcaml" scripts
+ * @param {object} brythonParams object containing brython init parameters
  */
-function initLcaml() {
+function initLcaml(brythonParams = {}) {
     if (window.lcamlContext !== undefined || window.runLcaml !== undefined)
         return;
     let script = document.createElement("script");
@@ -74,7 +75,7 @@ function initLcaml() {
                     document.addEventListener("DOMContentLoaded", () => scriptExecutor(lcamlMain));
             };
             document.head.appendChild(script);
-            brython();
+            brython(brythonParams);
         };
         document.head.appendChild(script);
     };
