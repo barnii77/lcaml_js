@@ -32,9 +32,10 @@ def nested_exists(item, attr: str):
     path = attr.split(".")
     sub_item = item
     for p in path:
-        if p not in sub_item:
+        try:
+            sub_item = sub_item[p]
+        except KeyError:
             return False
-        sub_item = sub_item[p]
     return True
 
 

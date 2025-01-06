@@ -26,14 +26,18 @@ function getDefaultLcamlContext() {
 
 /**
  * Initialize LCaml functionality: brython and type="text/lcaml" scripts
- * @param {object} brythonParams object containing brython init parameters
+ * @param {object} cache brython parameter: whether to cache compiled modules (reduces load time massively)
+ * @param {number} debug brython parameter: debug level (0, 1, 2, 10)
  */
-function initLcaml(brythonParams = {cache: false, debug: 0}) {
-    let paramKeys = Object.keys(brythonParams);
-    let validKeys = ["cache", "debug"];
-    for (let key of paramKeys) {
-        if (!validKeys.includes(key))
-            throw new Error(`invalid brython parameter key: ${key}`);
+function initLcaml(cache = false, debug = 0) {
+    if (typeof cache !== "boolean") {
+        throw new Error("cache must be a boolean");
+    }
+    if (typeof debug !== "number") {
+        throw new Error("debug must be a number");
+    }
+    if (debug !== 0 && debug !== 1 && debug !== 2 && debug !== 10) {
+        throw new Error("debug must be 0, 1, 2, or 10");
     }
     if (window.lcamlContext !== undefined || window.runLcaml !== undefined)
         return;
@@ -81,7 +85,7 @@ function initLcaml(brythonParams = {cache: false, debug: 0}) {
                     document.addEventListener("DOMContentLoaded", () => scriptExecutor(lcamlMain));
             };
             document.head.appendChild(script);
-            brython(brythonParams);
+            brython({cache: cache, debug: debug});
         };
         document.head.appendChild(script);
     };
