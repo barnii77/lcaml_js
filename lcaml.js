@@ -28,7 +28,13 @@ function getDefaultLcamlContext() {
  * Initialize LCaml functionality: brython and type="text/lcaml" scripts
  * @param {object} brythonParams object containing brython init parameters
  */
-function initLcaml(brythonParams = {}) {
+function initLcaml(brythonParams = {cache: false, debug: 0}) {
+    let paramKeys = Object.keys(brythonParams);
+    let validKeys = ["cache", "debug"];
+    for (let key of paramKeys) {
+        if (!validKeys.includes(key))
+            throw new Error(`invalid brython parameter key: ${key}`);
+    }
     if (window.lcamlContext !== undefined || window.runLcaml !== undefined)
         return;
     let script = document.createElement("script");
